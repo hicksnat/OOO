@@ -5,6 +5,7 @@
 
 define w = Character("Worker", color = "#FF0000")
 
+#########TEST
 
 # The game starts here.
 
