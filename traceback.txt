@@ -1,0 +1,24 @@
+﻿I'm sorry, but an uncaught exception occurred.
+
+While running game code:
+  File "game/script.rpy", line 49, in script
+    e "While creating a multi-path visual novel can be a bit more work, it can yield a unique experience."
+Exception: Sayer 'e' is not defined.
+
+-- Full Traceback ------------------------------------------------------------
+
+Full traceback:
+  File "game/script.rpy", line 49, in script
+    e "While creating a multi-path visual novel can be a bit more work, it can yield a unique experience."
+  File "C:\Users\dhend\Desktop\Projects\GameJam\RenPy\renpy-8.2.1-sdk\renpy\ast.py", line 2557, in execute
+    Say.execute(self)
+  File "C:\Users\dhend\Desktop\Projects\GameJam\RenPy\renpy-8.2.1-sdk\renpy\ast.py", line 575, in execute
+    who = eval_who(self.who, self.who_fast)
+  File "C:\Users\dhend\Desktop\Projects\GameJam\RenPy\renpy-8.2.1-sdk\renpy\ast.py", line 464, in eval_who
+    raise Exception("Sayer '%s' is not defined." % who)
+Exception: Sayer 'e' is not defined.
+
+Windows-10-10.0.22631 AMD64
+Ren'Py 8.2.1.24030407
+Out-Of-Order-VN 1.0
+Sun Mar 31 02:13:30 2024
