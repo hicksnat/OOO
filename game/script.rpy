@@ -1,11 +1,9 @@
 ﻿# The script of the game goes in this file.
 
-# Declare characters used by this game. The color argument colorizes the
-# name of the character.
 
+#Fastfood worker character
 define w = Character("Worker", color = "#FF0000")
 
-#########TEST
 
 # The game starts here.
 
@@ -24,11 +22,12 @@ label start:
 
     "Insert goal here."
 
+    scene bg window1
     
 
 
 
-    w "You've created a new Ren'Py game."
+    w "Welcome to {name}"
 
     w "Once you add a story, pictures, and music, you can release it to the world!"
 
