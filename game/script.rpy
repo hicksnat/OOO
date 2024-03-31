@@ -2,8 +2,8 @@
 
 
 #variables
-default money = 200.0
-default numOfWorkers = 20
+default money = 100.0
+default numOfWorkers = 10
 
 default inventory = []
 default nameOfRestaurant = "tempname"
@@ -14,11 +14,14 @@ default costBoiledBurger = 15
 default costSoda = 5
 default costGrilledChicken = 19
 
+#goal list (list of things you want to get)
+default goalsList = ["Fries","Soda"]
+
 #items on menu for each turn
 default itemsTurn = {
     1: ["Fries.", "Boiled burger."],
     2: ["Soda.", "Grilled chicken.","Fries.", "Boiled burger."],
-    #TODO: add turns. change maxTurnNumber to increase as you add more turns
+    #TODO: add more turns. change maxTurnNumber to increase as you add more turns
 }
 default maxTurnNumber = 2
 
@@ -41,21 +44,26 @@ label start:
 
     #begin dialog
 
-    "Insert what main character is thinking at the start here."
+    "Only one more order to fulfil for the day. Let's see what he wants..."
+    
+    "[goalsList]" #TODO: make this look better in the game
 
-    "Insert goal here."
-
-    scene bg window1
+    
     
 
 
 
-    w "Welcome to [nameOfRestaurant]. We have a variety of foods to choose from!"
-
-    w "What would you like to order?"
+    
 
     label order:
         $ reciept = 0;
+
+        scene bg window1
+
+        w "Welcome to [nameOfRestaurant]. We have a variety of foods to choose from!"
+
+        w "What would you like to order?"
+
         jump menuPrompt
         
 
@@ -107,6 +115,8 @@ label start:
                 "You need at least [costGrilledChicken] to buy soda."
                 jump menuPrompt
 
+            #TODO: Add choice for no money
+
     
 
     label continueOrder:
@@ -120,22 +130,49 @@ label start:
     label finishOrder:
         $ turnNumber +=1
         "Okay, that will be $[reciept]. Please continue to the checkout window to recieve your food."
+        jump recieveItemsAtWindow
+        
+        
+    label recieveItemsAtWindow:
         scene bg window2
-        "bla bla bla here"
-        "please pull back around"
+        "Here's your food." #TODO: make it say what foods they ordered
+        
    
 
 
-    #TODO: do checkout window INSERT THAT HERE IN THIS SPACE
     # they will have to pull back around and order again:
-    jump order
+    label checkOrder:
+        $ hasNotCompletedOrder = True
+        python:
+            for item in goalsList:
+                if item not in inventory:
+                    hasNotCompletedOrder = False
+            hasNotCompletedOrder = not hasNotCompletedOrder
+        
+        if money <= 5: #minimum cost of item
+            jump starve
+        if numOfWorkers <= 0:
+            jump becomeWorker
+        if hasNotCompletedOrder:
+            w "Sorry, please pull back around. No refunds."
+            jump order
 
 
+    label win:
+        scene bg car
+        "You have completed your order and drive off."
+        return
+
+    label starve:
+        scene bg window1
+        w "No money no food."
+        "NOOOOOOO!"
+        return
+
+    label becomeWorker:
+        w "WE ARE HIRING"
+        return
 
 
-
-
-    #TODO: Make it so that when they run out of money they fail
-    #TODO: death of workers stuff and its loss condition
     #done
     return
