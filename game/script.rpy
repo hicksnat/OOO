@@ -61,8 +61,14 @@ label start:
     
     "[goalsList]" #TODO: make this look better in the game
 
-    
-    
+    #Boolean values that tell if certain negative statuses are active
+    default fireActive = False                        #Kills one worker every turn                                      
+    default customerRevoltActive = False              #Kills two workers every turn
+    default strangePersonActive = False               #In three turns, will kill 5 workers
+    default curseActive = False                       #All workers will die in 6 turns
+    default hydraActive = False                       #Kills 1 worker the first turn, then 1 + n workers for n turns
+    default firstRound = True
+
 
 
 
@@ -77,6 +83,49 @@ label start:
 
         w "What would you like to order?"
 
+        if firstRound:
+            $ firstRound = False
+            jump menuPrompt
+
+        #Generates one of the statuses (or a chance to have none) randomly
+        $ status = renpy.random.randint(1, 6)
+        if status == 1:
+            $ fireActive = True
+            jump fireTalkbox
+        elif status == 2:
+            $ customerRevoltActive = True
+            jump customerRevoltTalkbox
+        elif status == 3:
+            $ strangePersonActive = True
+            jump strangePersonTalkbox
+        elif status == 4:
+            $ curseActive = True
+            jump curseTalkbox
+        elif status == 5:
+            $ hydraActive = True
+            jump hydraTalkbox
+        #If 6 is generated no status occurs
+
+        jump menuPrompt
+
+    label fireTalkbox:
+        "placeholder fire"
+        jump menuPrompt
+
+    label customerRevoltTalkbox:
+        "placeholder customer revolt"
+        jump menuPrompt
+
+    label strangePersonTalkbox:
+        "placeholder strange person"
+        jump menuPrompt
+
+    label curseTalkbox:
+        "placeholder curse"
+        jump menuPrompt
+
+    label hydraTalkbox:
+        "placeholder hydra"
         jump menuPrompt
 
     
@@ -90,10 +139,14 @@ label start:
         $ turnNumber = maxTurnNumber if turnNumber >= maxTurnNumber else turnNumber
         $ currentItems = itemsTurn[turnNumber] 
 
-        $ friesInMenu = "Fries." in currentItems                    #Boolean values that tell if the item is currently a menu option
+     
+        #Boolean values that tell if the item is currently a menu option
+        $ friesInMenu = "Fries." in currentItems                    
         $ boiledBurgerInMenu = "Boiled burger." in currentItems
         $ sodaInMenu = "Soda." in currentItems
         $ grilledChickenInMenu = "Grilled chicken." in currentItems
+
+        
 
         #Test function lowest price
         python: 
