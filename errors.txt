@@ -2,9 +2,9 @@
 errors listed below, and try again.
 
 
-File "game/script.rpy", line 144: invalid syntax
-    hasNotCompletedOrder = !hasNotCompletedOrder  
-                            ^
+File "game/script.rpy", line 138: invalid syntax
+        $ default lowestPrice = money
+         ^
 
 Ren'Py Version: Ren'Py 8.2.1.24030407
-Sun Mar 31 15:17:54 2024
+Mon Apr  1 03:11:27 2024

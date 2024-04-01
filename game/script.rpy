@@ -78,18 +78,40 @@ label start:
         w "What would you like to order?"
 
         jump menuPrompt
+
+    
+    
         
 
     label menuPrompt:
         scene bg window1
-        #TODO: Add lose condition (if money <= 0 then lose) add the check right here in the code
+        
+                 
         $ turnNumber = maxTurnNumber if turnNumber >= maxTurnNumber else turnNumber
         $ currentItems = itemsTurn[turnNumber] 
 
-        $ friesInMenu = "Fries." in currentItems
+        $ friesInMenu = "Fries." in currentItems                    #Boolean values that tell if the item is currently a menu option
         $ boiledBurgerInMenu = "Boiled burger." in currentItems
         $ sodaInMenu = "Soda." in currentItems
         $ grilledChickenInMenu = "Grilled chicken." in currentItems
+
+        #Test function lowest price
+        python: 
+            def lowest_price():
+                lowestPrice = money
+                
+                if (friesInMenu and costFries < lowestPrice):
+                    lowestPrice = costFries
+                if (boiledBurgerInMenu and costBoiledBurger < lowestPrice):
+                    lowestPrice = costBoiledBurger
+                if (sodaInMenu and costSoda < lowestPrice):
+                    lowestPrice = costSoda
+                if (grilledChickenInMenu and costGrilledChicken < lowestPrice):
+                    lowestPrice = costGrilledChicken
+                return lowestPrice
+
+        if money < lowest_price():
+            jump starve          ### Added condition, lowest_price function is under the menu                    ### 
 
         menu:
             "Fries. ($[costFries])" if (money >= costFries) and (friesInMenu):
@@ -131,6 +153,7 @@ label start:
             #TODO: Add choice for no money
 
     
+
 
     label continueOrder:
         "Sure, anything else?"
