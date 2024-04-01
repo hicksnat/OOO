@@ -30,6 +30,7 @@ default turnNumber = 1
 #Characters
 define y = Character("You", color = "#8fd567")
 define w = Character("Worker", color = "#FF0000")
+define u = Character("???", color = "#c9315ecf")
 
 
 # The game starts here.
@@ -84,24 +85,34 @@ label start:
         w "What would you like to order?"
 
         if firstRound:
-            $ firstRound = False
             jump menuPrompt
 
         #Generates one of the statuses (or a chance to have none) randomly
+        #Checks if status is already active, if so jumps to menuprompt, if not, jumps to prompt activation
         $ status = renpy.random.randint(1, 6)
         if status == 1:
+            if fireActive:
+                jump menuPrompt
             $ fireActive = True
             jump fireTalkbox
         elif status == 2:
+            if customerRevoltActive:
+                jump menuPrompt
             $ customerRevoltActive = True
             jump customerRevoltTalkbox
         elif status == 3:
+            if strangePersonActive:
+                jump menuPrompt
             $ strangePersonActive = True
             jump strangePersonTalkbox
         elif status == 4:
+            if curseActive:
+                jump menuPrompt
             $ curseActive = True
             jump curseTalkbox
         elif status == 5:
+            if hydraActive:
+                jump menuPrompt
             $ hydraActive = True
             jump hydraTalkbox
         #If 6 is generated no status occurs
@@ -109,23 +120,53 @@ label start:
         jump menuPrompt
 
     label fireTalkbox:
-        "placeholder fire"
+        "In between bursts of static, you hear calls of distress"
+        u  "TH-- --- FI-- FIRE --S-"
+        w "Welcome to [nameOfRestaurant]. Please ignore the screaming." 
+        w "Service is our priority! Even if it costs {b}a worker per order!{/b}"
+
         jump menuPrompt
 
     label customerRevoltTalkbox:
-        "placeholder customer revolt"
+        u "Next up for execution by firing squad…!"
+
+        w "Welcome to [nameOfRestaurant]. Please excuse the wait, there is currently a customer revolt going on."
+        w "They like to {b}kill two people for every order{/b}, but no go ahead I'm sure you're really hungry."
+        w "I'm sure we can find someone who can settle this down."
+        w "Atleast we get some extra ingredients from this."
+        w "I’m rambling. What would you like to order?"
+
         jump menuPrompt
 
     label strangePersonTalkbox:
-        "placeholder strange person"
+        "You feel… unsettled. Like you, and everyone in the restaurant, is being watched."
+        w "Welcome to [nameOfRestaurant]. Do you see that strange person over there?"
+        w "I’m sure they won’t murder {b}5 of us in 3 turns.{/b}"
+        w "But if they did… A Restraining Order adds 1 turn. Metal detectors stop it."
+        w "Would you like anything?"
+
         jump menuPrompt
 
     label curseTalkbox:
-        "placeholder curse"
+        "Sunday School suddenly feels a little nostalgic…"
+        w "Welcome to [nameOfRestaurant]. Have you ever heard of…"
+        w "…the “lingering death” curse? You can call it by saying 'Death, oh restore your sting.'"
+        w "So whatever you do, don't..."
+        w "..."
+        w "Oh shit, um."
+        w "Yo, Um, no way, some dumbass just cursed us so, uh, we can get about {b}6 orders done before we all croak.{/b}"
+        w "Daily Christian Bible Quote is now on the menu."
+        w "Would you like anything?"
+
         jump menuPrompt
 
     label hydraTalkbox:
-        "placeholder hydra"
+        u "RRRAA-------AA-H-----HHHHHH---RRRRGGHH"
+        w "Welcome to [nameOfRestaurant]! We are doomed."
+        w "There’s a hydra in the kitchen. It just {b}kills more and more people for every order.{/b}"
+        w "Did we tell you about our premium sword and under-boiled burger options?"
+        w "If only there was some way to poison it… Your order?"
+
         jump menuPrompt
 
     
@@ -224,13 +265,42 @@ label start:
         
     label recieveItemsAtWindow:
         scene bg window2
-        "Here's your food." #TODO: make it say what foods they ordered
+        if firstRound:
+            "The barred window is dark when you pull up."
+            "At first you think it’s just tinted enough to make an obnoxious car guy blush."
+            "But you realize that’s not the case when the window slides open."
+            "You can barely see a thing inside there. Is anyone even in there?"
+            "Between the darkness and the abysmal sanitation rating hanging in the window, you’re tempted to drive off and give up on this altogether."
+            "But then a hand juts out from the darkness." 
+
+        w "Ahem. Your payment please."
+        "You push down your unease and fish in your pocket for the proper change."
+        y "...Here."
+        "The worker quickly snatches the money from your outstretched hand, and before you can retract it, they hand you your order in a crumpled bag."
+        w "Enjoy your grub. We hope to see you again soon for some more burger bliss."
+
+        if firstRound:
+            "You ignore the fact that their lack of enthusiasm makes the statement sound more like a threat than a well-wish, preparing to pull out."
+
+
+ #TODO: make it say what foods they ordered
         
    
 
 
     # they will have to pull back around and order again:
     label checkOrder:
+        if fireActive:
+            w "Man, that fire is still going on... well, we're too busy with orders to put it out."
+        if customerRevoltActive:
+            w "These customer revolts are getting old. I don't really know how to stop it though."
+        if strangePersonActive:
+            w "Why is that guy still here? he's gotta be up to no good."
+        if curseActive:
+            w "I feel a strange sense of impending doom. Strange."
+        if hydraActive:
+            w "God the hydra is still in here. We're gonna need a bigger broom."
+        $ firstRound = False
         $ hasNotCompletedOrder = True
         python:
             for item in goalsList:
