@@ -6,7 +6,7 @@ default money = 100.0
 default numOfWorkers = 10
 
 default inventory = []
-default nameOfRestaurant = "tempname"
+default nameOfRestaurant = "The Boiled Burger"
 
 #costs
 default costFries = 10
@@ -27,7 +27,8 @@ default maxTurnNumber = 2
 
 default turnNumber = 1
 
-#Fastfood worker character
+#Characters
+define y = Character("You", color = "#8fd567")
 define w = Character("Worker", color = "#FF0000")
 
 
@@ -44,7 +45,19 @@ label start:
 
     #begin dialog
 
-    "Only one more order to fulfil for the day. Let's see what he wants..."
+    y "Hells, I thought that shift would never end. I can’t wait to climb into bed and rot."
+
+    "It’s completely dark outside by the time you finish work and finally regain your freedom."
+    "Your bed is calling to you, but unfortunately, it has to wait. First, you have to go to [nameOfRestaurant]."
+    "That’s right. You promised your partner you’d go get them something at that dreaded place."
+    "You’ve never liked any of their food – that is, their singular option: the boiled burger."
+    "You’re not sure how anyone does."
+    "Just the name itself sounds unappetizing. Boiled Burgers?"
+    "But alas, your partner requested their squishy, soggy-bread burger, and YOU have to buy it for them."
+    "That’s what love’s all about."
+    "You have $[money] on you, more than enough to get a boiled burger, even with the inflation these days. God willing, this will be a quick, painless experience. It was fast food, after all."
+    "And now, you pull into the decrepit, empty drive thru of this forsaken restaurant." 
+
     
     "[goalsList]" #TODO: make this look better in the game
 
