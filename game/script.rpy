@@ -13,6 +13,13 @@ default costFries = 10
 default costBoiledBurger = 15
 default costSoda = 5
 default costGrilledChicken = 19
+default costStirfries = 11
+
+default costIceWater = 3
+default costPolitician = 20
+default costRestrainingOrder = 30
+default costDailyChristianBibleQuote = 15
+default costSword = 12
 
 #goal list (list of things you want to get)
 default goalsList = ["Fries","Soda"]
@@ -20,7 +27,7 @@ default goalsList = ["Fries","Soda"]
 #items on menu for each turn
 default itemsTurn = {
     1: ["Fries.", "Boiled burger."],
-    2: ["Soda.", "Grilled chicken.","Fries.", "Boiled burger."],
+    2: ["Soda.", "Grilled chicken.","Fries.", "Boiled burger.","Stir-fries."],
     #TODO: add more turns. change maxTurnNumber to increase as you add more turns
 }
 default maxTurnNumber = 2
@@ -31,6 +38,7 @@ default turnNumber = 1
 define y = Character("You", color = "#8fd567")
 define w = Character("Worker", color = "#FF0000")
 define u = Character("???", color = "#c9315ecf")
+define p = Character("Partner", color = "#90bdcc")
 
 
 # The game starts here.
@@ -60,7 +68,7 @@ label start:
     "And now, you pull into the decrepit, empty drive thru of this forsaken restaurant." 
 
     
-    "[goalsList]" #TODO: make this look better in the game
+    "Your partner wants [goalsList]" #TODO: make this look better in the game
 
     #Boolean values that tell if certain negative statuses are active
     default fireActive = False                        #Kills one worker every turn                                      
@@ -145,6 +153,8 @@ label start:
         w "But if they did… A Restraining Order adds 1 turn. Metal detectors stop it."
         w "Would you like anything?"
 
+        $ StrangePersonCountdown = 3
+
         jump menuPrompt
 
     label curseTalkbox:
@@ -157,6 +167,7 @@ label start:
         w "Yo, Um, no way, some dumbass just cursed us so, uh, we can get about {b}6 orders done before we all croak.{/b}"
         w "Daily Christian Bible Quote is now on the menu."
         w "Would you like anything?"
+        $ curseCountdown = 6
 
         jump menuPrompt
 
@@ -164,8 +175,10 @@ label start:
         u "RRRAA-------AA-H-----HHHHHH---RRRRGGHH"
         w "Welcome to [nameOfRestaurant]! We are doomed."
         w "There’s a hydra in the kitchen. It just {b}kills more and more people for every order.{/b}"
-        w "Did we tell you about our premium sword and under-boiled burger options?"
-        w "If only there was some way to poison it… Your order?"
+        w "Did we tell you about our premium sword option? Your burger will never be cut cleaner!"
+        w "If only there was some way to kill it… Your order?"
+
+        $ hydraNumber = 1
 
         jump menuPrompt
 
@@ -179,13 +192,15 @@ label start:
                  
         $ turnNumber = maxTurnNumber if turnNumber >= maxTurnNumber else turnNumber
         $ currentItems = itemsTurn[turnNumber] 
-
+        
      
         #Boolean values that tell if the item is currently a menu option
         $ friesInMenu = "Fries." in currentItems                    
         $ boiledBurgerInMenu = "Boiled burger." in currentItems
         $ sodaInMenu = "Soda." in currentItems
         $ grilledChickenInMenu = "Grilled chicken." in currentItems
+        $ stirFriesInMenu = "Stir-fries." in currentItems
+
 
         
 
@@ -207,6 +222,7 @@ label start:
         if money < lowest_price():
             jump starve          ### Added condition, lowest_price function is under the menu                    ### 
 
+        
         menu:
             "Fries. ($[costFries])" if (money >= costFries) and (friesInMenu):
                 $ money -= costFries
@@ -243,8 +259,77 @@ label start:
             "You don't have enough money for grilled chicken." if money < costGrilledChicken:
                 "You need at least [costGrilledChicken] to buy soda."
                 jump menuPrompt
+            
+            "Stir-fries. ($[costStirfries])" if (money >= costStirfries) and (stirFriesInMenu):
+                $ money -= costStirfries
+                $ reciept += costStirfries
+                $ inventory.append("Stir-fries")
+                jump continueOrder
+            "You don't have enough money for Stir-fries" if money < costStirfries:
+                "You need at least [costStirfries] to buy stir-fries."
+                jump menuPrompt
 
-            #TODO: Add choice for no money
+            #Status items
+        
+            "Ice water. ($[costIceWater])" if (money >= costIceWater) and (fireActive):
+                $ money -= costIceWater
+                $ reciept += costIceWater
+                $ fireActive = False
+                #Do not append to inventory because the workers use it
+                jump continueOrder
+            "You don't have enough money for Ice water." if (money < costIceWater) and (fireActive):
+                "You need at least [costIceWater] to buy ice water."
+                jump menuprompt
+
+            "Politician. ($[costPolitician])" if (money >= costPolitician) and (customerRevoltActive):
+                $ money -= costPolitician
+                $ reciept += costPolitician
+                $ customerRevoltActive = False
+                #Do not append to inventory because the workers use it
+                jump continueOrder
+            "You don't have enough money for a politician." if (money < costPolitician) and (customerRevoltActive):
+                "You need at least [costPolitician] to buy a politician."
+                jump menuprompt
+            
+            "Restraining Order. ($[costRestrainingOrder])" if (money >= costRestrainingOrder) and (strangePersonActive):
+                $ money -= costRestrainingOrder
+                $ reciept += costRestrainingOrder
+                $ strangePersonActive = False
+                #Do not append to inventory because the workers use it
+                jump continueOrder
+            "You don't have enough money for a restraining order." if (money < costRestrainingOrder) and (strangePersonActive):
+                "You need at least [costRestrainingOrder] to buy a restraining order."
+                jump menuprompt
+
+            "Daily Christian Bible Quote. ($[costDailyChristianBibleQuote])" if (money >= costDailyChristianBibleQuote) and (curseActive):
+                $ money -= costDailyChristianBibleQuote
+                $ reciept += costDailyChristianBibleQuote
+                $ curseActive = False
+                #Do not append to inventory because the workers use it
+                jump continueOrder
+            "You don't have enough money for a Daily Christian Bible Quote." if (money < costDailyChristianBibleQuote) and (curseActive):
+                "You need at least [costDailyChristianBibleQuote] to buy ice water."
+                jump menuprompt
+
+            "Sword. ($[costSword])" if (money >= costSword) and (hydraActive):
+                $ money -= costSword
+                $ reciept += costSword
+                $ hydraActive = False
+                #Do not append to inventory because the workers use it
+                jump continueOrder
+            "You don't have enough money for a sword." if (money < costSword) and (hydraActive):
+                "You need at least [costSword] to buy a sword."
+                jump menuprompt
+
+            "You don't have money... order something anyway?" if (money < 3) and (fireActive):
+                "You helped them out, surely they'll return your good will."
+                jump starve
+            "You don't have money... order something anyway?" if (money < 5) and (fireActive == False):
+                "You helped them out, surely they'll return your good will."
+                jump starve
+
+
+
 
     
 
@@ -283,24 +368,77 @@ label start:
             "You ignore the fact that their lack of enthusiasm makes the statement sound more like a threat than a well-wish, preparing to pull out."
 
 
- #TODO: make it say what foods they ordered
+    #TODO: make it say what foods they ordered
         
    
 
 
     # they will have to pull back around and order again:
-    label checkOrder:
+    label checkOrder:         #Status effects and their consequences
+
+        if numOfWorkers <= 0:
+            jump becomeWorker
+
         if fireActive:
             w "Man, that fire is still going on... well, we're too busy with orders to put it out."
+            $ numOfWorkers -= 1
         if customerRevoltActive:
             w "These customer revolts are getting old. I don't really know how to stop it though."
+            $ numOfWorkers -= 2
         if strangePersonActive:
             w "Why is that guy still here? he's gotta be up to no good."
+            $ StrangePersonCountdown -= 1
+            if (StrangePersonCountdown == 0):
+                $ numOfWorkers -= 5
+                $ strangePersonActive = False    
         if curseActive:
             w "I feel a strange sense of impending doom. Strange."
+            $ curseCountdown -= 1
+            if (curseCountdown == 0):
+                $ numOfWorkers = 0
         if hydraActive:
             w "God the hydra is still in here. We're gonna need a bigger broom."
-        $ firstRound = False
+            $ numOfWorkers -= hydraNumber
+            $ hydraNumber += 1
+        "You have $[money] left."
+        "Judging by the carnage, there are probably about [numOfWorkers] employees left."
+        if curseActive:
+            "About [curseCountdown] more orders until everyone in there is doomed!"
+        if strangePersonActive:
+            "That strange man is up to no good. About [StrangePersonCountdown] orders until he strikes...."
+
+        
+
+        if firstRound:
+            "Just as you flip on your turn signal, your phone rings, causing you to jump in your seat. You answer."
+            y "Hello?"
+            p "Ah, hey, have you left [nameOfRestaurant] yet?"
+            y "…no?"
+            p "Awesome! I realized I’m a bit hungrier than expected and their website says they added new stir-fries to the menu. I was hoping you’d get me some of those, too. Pretty please?"
+            y "…yeah, I can do that."
+            p "Thank you, thank you, thank you! See you soon! Love ya!"
+            "They hang up, leaving you in silence."
+            y "Gods above, I have to go back around."
+            $ goalsList.append("Stir-fries")
+            #Write the things left that you need
+            
+            
+            if fireActive:
+                if money < 3:
+                    jump starve
+            elif money < 5:
+                jump starve
+            
+            $ currentGoalsList = []
+            python:
+                for item in goalsList:
+                    if item not in inventory:
+                        currentGoalsList.append(item)
+            #You could add here if the currentGoalsList is empty at this point then jump to the win label
+            "You still need [currentGoalsList]."
+            $ firstRound = False
+
+        
         $ hasNotCompletedOrder = True
         python:
             for item in goalsList:
@@ -319,17 +457,56 @@ label start:
 
     label win:
         scene bg car
-        "You have completed your order and drive off."
+        "You pull away from the window, expecting your phone to ring. But a moment passes, and another, with nothing. No call. Could it be? Can you finally… leave?"
+        "You pull out of the parking lot, unable to wipe the stupid grin off your face as that awful place grows smaller and smaller in your rearview mirror."
+        y "Thank Oderus, I thought I was never getting out of that hellhole. I think I got everything that was requested of me. At least I hope so."
+        "As you drive down the empty, moonlit road towards home, you let your thoughts shift from that experience to much, much more pleasant thoughts."
+        y "I can’t wait to hit the sack."
+
         return
 
     label starve:
-        scene bg window1
-        w "No money no food."
-        "NOOOOOOO!"
+        scene bg window2
+        "You reach into your pocket to grab your payment, but are met by nothingness. Somehow in this whole shebang, you’d managed to spend $200. At Boiled Burgers, of all places."
+        "You think about how many Robux you could’ve bought with that kind of money, or Dairy Queen Blizzards. A lot, that’s for damn sure. But now you’re here, $200 in and still unable to get everything that was requested of you."
+        "A sharp cough breaks you from your thoughts, and you realize the worker—or at least their phantom hand in the darkness—is still awaiting your payment." 
+        "You frantically search your car, checking under the seats and in every nook and cranny for a bit of cash, but it’s all in vain. You have nothing, and the worker is starting to notice, if the gradual closing of their fist is any indication."
+        y "I… uh… I don’t have any money. Can I just cancel my order?"
+        w "But… we already made it. It’s already done. You can’t just… we can’t take the loss. You have to give us something. Something worth the same as your order."
+        y "I don’t have anything! What do you want me to do? I even spent money trying to help you guys. Can’t you just give me this one thing?"
+        "The worker’s hands shake, moving faster and faster until they are vibrating at a speed that shouldn’t be humanly possible. You try to roll up your window, but it isn’t fast enough."
+        "Their fingers cram into the remaining gap and grab you by the shirt, pulling you against your window. You feel your vision go black for a moment, and before you can fight back, your vision returns." 
+        "You're driving. Boiled Burgers is nowhere in sight. You look to your left. All the food you’d accumulated… is gone? Were you ever at Boiled Burgers? Was this all a dream?"
+        "There’s an emptiness in your chest. A tightness, that’s unfamiliar."
+        "You check your pockets, and they are empty. Your money is gone. And maybe something else is too?"
+        "You lose."
+
         return
 
     label becomeWorker:
-        w "WE ARE HIRING"
+        scene bg window2
+        "You pull up to the window, your payment already in hand. But as you sit there, the window never opens. You wait, and wait, to no avail. Maybe you should knock?
+        You lean out of your car and do just that. Still nothing.
+        Maybe… it couldn’t be, right? There’s got to be someone in there still?
+        You knock harder, more frantically."
+        y "Hello? Can I please have my order?"
+        "Silence."
+        y "Please? Please! Is anyone there?"
+        "You find yourself begging for the annoyingly absurd worker from earlier to return, or the spooky hand. Any sign of life."
+        y "…please?"
+        "It looks like you won’t be getting anything else from Boiled Burgers tonight. Your partner might be disappointed, but at the moment, all you can think about is:"
+        menu:  
+            "The terrible service.":
+                "This is, quite frankly, unbelievable. When they made such a big deal about the protocol, the “customer is always right” nonsense. But they were unable to fulfill your requests."
+                "You, a paying customer! Boiled Burgers corporate would definitely be hearing about this."
+                "You pull away, frustrated and ready to leave a nasty Yelp review when you get home."
+                
+
+            "That this is your fault.":
+                "Maybe if you had never shown up… never kept pushing for more things… maybe none of this would’ve happened. Maybe it was all preventable. Maybe their deaths were on your hands."
+                "One thing’s for sure."
+                "You Lose."
+
         return
 
 

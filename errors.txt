@@ -2,7 +2,9 @@
 errors listed below, and try again.
 
 
-File "game/script.rpy", line 128: Indentation mismatch.
+File "game/script.rpy", line 500: Line is followed by a block, despite not being a menu choice. Did you forget a colon at the end of the line?
+    "That this is your fault."
+                              ^
 
 Ren'Py Version: Ren'Py 8.2.1.24030407
-Mon Apr  1 16:08:06 2024
+Mon Apr  1 23:22:00 2024
